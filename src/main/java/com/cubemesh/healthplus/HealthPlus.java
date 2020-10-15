@@ -1,4 +1,4 @@
-package com.example.healthplus;
+package com.cubemesh.healthplus;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
