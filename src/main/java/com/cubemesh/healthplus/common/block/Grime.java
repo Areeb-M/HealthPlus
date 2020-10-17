@@ -1,5 +1,6 @@
 package com.cubemesh.healthplus.common.block;
 
+import com.cubemesh.healthplus.common.Config;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
@@ -25,8 +26,6 @@ public class Grime extends Block {
     public static final IntegerProperty LAYERS = BlockStateProperties.LAYERS_1_8;
     protected static final VoxelShape[] SHAPES = new VoxelShape[]{VoxelShapes.empty(), Block.makeCuboidShape(0.0D, 0.0D, 0.0D, 16.0D, 2.0D, 16.0D), Block.makeCuboidShape(0.0D, 0.0D, 0.0D, 16.0D, 4.0D, 16.0D), Block.makeCuboidShape(0.0D, 0.0D, 0.0D, 16.0D, 6.0D, 16.0D), Block.makeCuboidShape(0.0D, 0.0D, 0.0D, 16.0D, 8.0D, 16.0D), Block.makeCuboidShape(0.0D, 0.0D, 0.0D, 16.0D, 10.0D, 16.0D), Block.makeCuboidShape(0.0D, 0.0D, 0.0D, 16.0D, 12.0D, 16.0D), Block.makeCuboidShape(0.0D, 0.0D, 0.0D, 16.0D, 14.0D, 16.0D), Block.makeCuboidShape(0.0D, 0.0D, 0.0D, 16.0D, 16.0D, 16.0D)};
 
-    private static int manureEffectReach = 5;
-    private static int manureEffectRepetition = 3;
 
     public Grime(Properties properties) {
         super(properties);
@@ -43,22 +42,30 @@ public class Grime extends Block {
         builder.add(LAYERS);
     }
 
+    public boolean propagatesSkylightDown(BlockState state, IBlockReader reader, BlockPos pos) {
+        return true;
+    }
+
     public void randomTick(BlockState state, ServerWorld worldIn, BlockPos pos, Random random) {
+        if (!Config.GRIME_DO_DECAY.get())
+            return;
+
         int layer = getNumLayers(state);
         if (layer - 1 == 0)
             worldIn.destroyBlock(pos, false);
         else
             worldIn.setBlockState(pos, withLayerNum(state, layer - 1));
-        for (int i = 0; i < manureEffectRepetition; i++)
+        for (int i = 0; i < Config.GRIME_MANURE_EFFECT_REPETITIONS.get(); i++)
             applyManureEffect(state, worldIn, pos, random);
     }
 
     private void applyManureEffect(BlockState state, ServerWorld worldIn, BlockPos pos, Random random) {
         int vx = 0, vz = 0;
+        int r = Config.GRIME_MANURE_EFFECT_REACH.get();
         while (vx == 0 && vz == 0)
         {
-            vx = random.nextInt(2*manureEffectReach + 1) - 3;
-            vz = random.nextInt(2*manureEffectReach + 1) - 3;
+            vx = random.nextInt(2*r + 1) - 3;
+            vz = random.nextInt(2*r + 1) - 3;
         }
         Vector3i arrow = new Vector3i(vx, 0, vz);
         BlockPos target = pos.add(arrow);
