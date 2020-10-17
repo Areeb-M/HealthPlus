@@ -14,7 +14,6 @@ public class Config {
 
     // Block Grime
     public static final String SUBCATEGORY_GRIME = "grime";
-    public static ForgeConfigSpec.BooleanValue GRIME_DO_MANURE_EFFECT;
     public static ForgeConfigSpec.BooleanValue GRIME_DO_DECAY;
     public static ForgeConfigSpec.BooleanValue GRIME_DO_ANIMALS_DEFECATE;
     public static ForgeConfigSpec.IntValue GRIME_MANURE_EFFECT_REACH;
@@ -42,11 +41,9 @@ public class Config {
         GRIME_DO_DECAY = server.comment("Toggles whether Grime blocks decay")
                 .define("doDecay", true);
 
-        GRIME_DO_MANURE_EFFECT = server.comment("Toggles whether the Grime Block applies the bonemeal effect when it decays")
-                .define("doManureEffect", true);
         GRIME_MANURE_EFFECT_REACH = server.comment("How far the manure effect reaches within a square centered on the block")
                 .defineInRange("manureEffectReach", 5, 1, 12*16);
-        GRIME_MANURE_EFFECT_REPETITIONS = server.comment("How many times each decay applies the manure effect")
-                .defineInRange("manureEffectRepetitions", 3, 1, 1024);
+        GRIME_MANURE_EFFECT_REPETITIONS = server.comment("How many times each decay applies the manure effect, set 0 to disable")
+                .defineInRange("manureEffectRepetitions", 3, 0, 1024);
     }
 }
