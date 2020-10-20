@@ -1,20 +1,20 @@
 package com.cubemesh.healthplus.common.block;
 
 import com.cubemesh.healthplus.common.Config;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockRenderType;
-import net.minecraft.block.BlockState;
+import net.minecraft.block.*;
 import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.state.IntegerProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.util.math.vector.Vector3i;
 import net.minecraft.world.IBlockReader;
-import net.minecraft.block.IGrowable;
+import net.minecraft.world.IWorld;
+import net.minecraft.world.IWorldReader;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -96,5 +96,21 @@ public class Grime extends Block {
 
     private int getNumLayers(BlockState state) {
         return state.get(LAYERS);
+    }
+
+    /**
+     * Borrowed from {@link net.minecraft.block.CarpetBlock}
+     *
+     * Update the provided state given the provided neighbor facing and neighbor state, returning a new state.
+     * For example, fences make their connections to the passed in state if possible, and wet concrete powder immediately
+     * returns its solidified counterpart.
+     * Note that this method should ideally consider only the specific face passed in.
+     */
+    public BlockState updatePostPlacement(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
+        return !stateIn.isValidPosition(worldIn, currentPos) ? Blocks.AIR.getDefaultState() : super.updatePostPlacement(stateIn, facing, facingState, worldIn, currentPos, facingPos);
+    }
+
+    public boolean isValidPosition(BlockState state, IWorldReader worldIn, BlockPos pos) {
+        return !worldIn.isAirBlock(pos.down());
     }
 }
