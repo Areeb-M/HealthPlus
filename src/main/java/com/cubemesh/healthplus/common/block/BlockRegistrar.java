@@ -1,6 +1,7 @@
 package com.cubemesh.healthplus.common.block;
 
 import com.cubemesh.healthplus.HealthPlus;
+import com.cubemesh.healthplus.common.block.material.MaterialRegistrar;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -29,7 +30,7 @@ public class BlockRegistrar {
      */
     public static final RegistryObject<Block> GRIME = BLOCKS.register("grime", () ->
             new Grime(
-                AbstractBlock.Properties.create(Material.EARTH)
+                AbstractBlock.Properties.create(MaterialRegistrar.GRIME)
                         .doesNotBlockMovement()
                         .speedFactor(0.5f)
                         .hardnessAndResistance(0.5f, 0.1f)
