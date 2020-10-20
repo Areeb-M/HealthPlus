@@ -55,6 +55,8 @@ public class HealthPlus
         MinecraftForge.EVENT_BUS.register(this);
 
         BlockRegistrar.init();
+
+
     }
 
     private void setup(final FMLCommonSetupEvent event)
