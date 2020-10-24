@@ -1,8 +1,13 @@
 package com.cubemesh.healthplus.common.block;
 
+import com.cubemesh.healthplus.HealthPlus;
 import com.cubemesh.healthplus.common.Config;
 import net.minecraft.block.*;
 import net.minecraft.client.renderer.RenderTypeLookup;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.MobEntity;
+import net.minecraft.entity.merchant.villager.VillagerEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.state.IntegerProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
@@ -15,9 +20,14 @@ import net.minecraft.util.math.vector.Vector3i;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.IWorldReader;
+import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.event.entity.living.LivingEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Random;
 
@@ -59,6 +69,13 @@ public class Grime extends Block {
             applyManureEffect(state, worldIn, pos, random);
     }
 
+    public static void addGrimeLevels(BlockState state, World worldIn, BlockPos pos, int n) {
+        int layer = getNumLayers(state);
+        layer = ((layer + n) % 8) + 1;
+
+        worldIn.setBlockState(pos, withLayerNum(state, layer));
+    }
+
     private void applyManureEffect(BlockState state, ServerWorld worldIn, BlockPos pos, Random random) {
         int vx = 0, vz = 0;
         int r = Config.GRIME_MANURE_EFFECT_REACH.get();
@@ -90,21 +107,16 @@ public class Grime extends Block {
         }
     }
 
-    private BlockState withLayerNum(BlockState state, int n) {
+    private static BlockState withLayerNum(BlockState state, int n) {
         return state.with(LAYERS, n);
     }
 
-    private int getNumLayers(BlockState state) {
+    private static int getNumLayers(BlockState state) {
         return state.get(LAYERS);
     }
 
     /**
      * Borrowed from {@link net.minecraft.block.CarpetBlock}
-     *
-     * Update the provided state given the provided neighbor facing and neighbor state, returning a new state.
-     * For example, fences make their connections to the passed in state if possible, and wet concrete powder immediately
-     * returns its solidified counterpart.
-     * Note that this method should ideally consider only the specific face passed in.
      */
     public BlockState updatePostPlacement(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
         return !stateIn.isValidPosition(worldIn, currentPos) ? Blocks.AIR.getDefaultState() : super.updatePostPlacement(stateIn, facing, facingState, worldIn, currentPos, facingPos);
@@ -113,4 +125,32 @@ public class Grime extends Block {
     public boolean isValidPosition(BlockState state, IWorldReader worldIn, BlockPos pos) {
         return !worldIn.isAirBlock(pos.down());
     }
+
+    public static class GrimeLivingUpdateHandler {
+        private final Logger LOGGER = LogManager.getLogger();
+        @SubscribeEvent
+        public void onLivingUpdate(LivingEvent.LivingUpdateEvent event) {
+            if (event.getEntity() instanceof PlayerEntity || event.getEntity() instanceof VillagerEntity)
+                return;
+
+            MobEntity entity = (MobEntity) event.getEntityLiving();
+            BlockState entityAt = entity.world.getBlockState(entity.getPosition());
+            if (!entity.isAggressive())
+            {
+                float seconds = 120f;
+                float chanceSeconds = 1.0f/20.0f;
+                float roll = entity.world.getRandom().nextFloat();
+                int size = entity.world.getRandom().nextInt(3) + 1;
+                if (roll < chanceSeconds/seconds) {
+                    if (entityAt.isAir()) {
+                        entity.world.setBlockState(entity.getPosition(), BlockRegistrar.GRIME.get().getDefaultState()
+                                .with(LAYERS, entity.world.getRandom().nextInt(3) + 1));
+                    } else if (entityAt.getBlock() instanceof Grime) {
+                        Grime.addGrimeLevels(entityAt, entity.world, entity.getPosition(), size);
+                    }
+                }
+            }
+        }
+    }
 }
+

@@ -7,11 +7,14 @@ import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.attributes.Attribute;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.world.Blockreader;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.InterModComms;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -53,7 +56,7 @@ public class HealthPlus
 
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
-
+        MinecraftForge.EVENT_BUS.register(new Grime.GrimeLivingUpdateHandler());
         BlockRegistrar.init();
 
 
