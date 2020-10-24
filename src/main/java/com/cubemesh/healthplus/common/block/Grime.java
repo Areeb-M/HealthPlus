@@ -140,7 +140,7 @@ public class Grime extends Block {
                 float seconds = Config.GRIME_DEFECATION_RATE.get();
                 float chanceSeconds = 1.0f/20.0f;
                 float roll = entity.world.getRandom().nextFloat();
-                int size = entity.world.getRandom().nextInt(3) + 1;
+                int size = entity.world.getRandom().nextInt(Config.GRIME_DEFECATION_SIZE.get()) + 1;
                 if (roll < chanceSeconds/seconds) {
                     if (entityAt.isAir()) {
                         entity.world.setBlockState(entity.getPosition(), BlockRegistrar.GRIME.get().getDefaultState()
