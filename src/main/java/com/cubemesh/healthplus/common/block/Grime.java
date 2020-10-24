@@ -31,7 +31,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.Random;
 
-@SuppressWarnings("deprecation")
+@SuppressWarnings({"deprecation", "override"})
 public class Grime extends Block {
     public static final IntegerProperty LAYERS = BlockStateProperties.LAYERS_1_8;
     protected static final VoxelShape[] SHAPES = new VoxelShape[]{VoxelShapes.empty(), Block.makeCuboidShape(0.0D, 0.0D, 0.0D, 16.0D, 2.0D, 16.0D), Block.makeCuboidShape(0.0D, 0.0D, 0.0D, 16.0D, 4.0D, 16.0D), Block.makeCuboidShape(0.0D, 0.0D, 0.0D, 16.0D, 6.0D, 16.0D), Block.makeCuboidShape(0.0D, 0.0D, 0.0D, 16.0D, 8.0D, 16.0D), Block.makeCuboidShape(0.0D, 0.0D, 0.0D, 16.0D, 10.0D, 16.0D), Block.makeCuboidShape(0.0D, 0.0D, 0.0D, 16.0D, 12.0D, 16.0D), Block.makeCuboidShape(0.0D, 0.0D, 0.0D, 16.0D, 14.0D, 16.0D), Block.makeCuboidShape(0.0D, 0.0D, 0.0D, 16.0D, 16.0D, 16.0D)};
@@ -39,7 +39,7 @@ public class Grime extends Block {
 
     public Grime(Properties properties) {
         super(properties);
-        this.setDefaultState(this.stateContainer.getBaseState().with(LAYERS, Integer.valueOf(8)));
+        this.setDefaultState(this.stateContainer.getBaseState().with(LAYERS, 8));
     }
 
     public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
@@ -134,10 +134,10 @@ public class Grime extends Block {
                 return;
 
             MobEntity entity = (MobEntity) event.getEntityLiving();
-            BlockState entityAt = entity.world.getBlockState(entity.getPosition());
             if (!entity.isAggressive())
             {
-                float seconds = 120f;
+                BlockState entityAt = entity.world.getBlockState(entity.getPosition());
+                float seconds = Config.GRIME_DEFECATION_RATE.get();
                 float chanceSeconds = 1.0f/20.0f;
                 float roll = entity.world.getRandom().nextFloat();
                 int size = entity.world.getRandom().nextInt(3) + 1;
