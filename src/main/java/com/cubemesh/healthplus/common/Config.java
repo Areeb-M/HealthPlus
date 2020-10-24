@@ -16,6 +16,8 @@ public class Config {
     public static final String SUBCATEGORY_GRIME = "grime";
     public static ForgeConfigSpec.BooleanValue GRIME_DO_DECAY;
     public static ForgeConfigSpec.BooleanValue GRIME_DO_ANIMALS_DEFECATE;
+    public static ForgeConfigSpec.IntValue GRIME_DEFECATION_RATE;
+    public static ForgeConfigSpec.IntValue GRIME_DEFECATION_SIZE;
     public static ForgeConfigSpec.IntValue GRIME_MANURE_EFFECT_REACH;
     public static ForgeConfigSpec.IntValue GRIME_MANURE_EFFECT_REPETITIONS;
 
@@ -38,6 +40,10 @@ public class Config {
 
         GRIME_DO_ANIMALS_DEFECATE = server.comment("Do animals defecate grime")
                 .define("doAnimalsDefecate", true);
+        GRIME_DEFECATION_RATE = server.comment("How often do animals defecate on average (seconds)")
+                .defineInRange("animalDefecationRate", 120,10, Integer.MAX_VALUE);
+        GRIME_DEFECATION_SIZE = server.comment("How many layers of grime are defecated at once")
+                .defineInRange("defecationSize", 3, 1, 8);
         GRIME_DO_DECAY = server.comment("Toggles whether Grime blocks decay")
                 .define("doDecay", true);
 
